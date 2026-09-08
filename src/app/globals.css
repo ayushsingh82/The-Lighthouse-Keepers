@@ -123,5 +123,66 @@ button {
 }
 
 .meter {
-  transition: width 0.12s linear;
+  transition: width 0.12s linear, height 0.12s linear;
+}
+
+/* a station that has fallen below the beam minimum breathes for attention */
+@keyframes pulse-low {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(255, 107, 87, 0.28);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(255, 107, 87, 0.55);
+  }
+}
+.pulse-low {
+  animation: pulse-low 1s ease-in-out infinite;
+}
+
+/* slow drift of the lantern glow on the landing page */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+.breathe {
+  animation: breathe 5s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+.twinkle {
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/* honour the OS "reduce motion" setting — keep the game readable, drop the loops */
+@media (prefers-reduced-motion: reduce) {
+  .beam-cone,
+  .beam-weak,
+  .fog-layer,
+  .rise,
+  .shake,
+  .breathe,
+  .twinkle,
+  .pulse-low,
+  .animate-ping {
+    animation: none !important;
+  }
+  .beam-cone {
+    transform: translateX(-50%) rotate(0deg);
+  }
 }

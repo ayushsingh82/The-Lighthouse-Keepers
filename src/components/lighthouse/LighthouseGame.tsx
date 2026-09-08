@@ -12,6 +12,7 @@ import {
   type LogEntry,
   type Tally,
 } from "@/lib/lighthouse/logbook";
+import { cue, primeAudio, startDrone, stopDrone } from "@/lib/lighthouse/feedback";
 import { Scene } from "./Scene";
 import { HUD } from "./HUD";
 import { StationDock } from "./StationDock";
@@ -61,23 +62,29 @@ export function LighthouseGame() {
     (e: TickEvent) => {
       switch (e.type) {
         case "ship-home":
+          cue.shipHome();
           pushToast("Guided home", "ok");
           break;
         case "beam-relit":
+          cue.beamRelit();
           pushToast("Beam relit", "ok");
           break;
         case "night-lost":
+          cue.nightLost();
           jolt();
           setTally(recordNight(false, e.guidedHome));
           break;
         case "ship-wrecked":
+          cue.shipWrecked();
           pushToast("Lost on the rocks", "bad");
           jolt();
           break;
         case "beam-died":
+          cue.beamDied();
           pushToast("The beam is dark!", "bad");
           break;
         case "dawn":
+          cue.dawn();
           setBottle(drawBottleMessage(readLogbook()));
           setTally(recordNight(true, e.guidedHome));
           break;
@@ -90,6 +97,46 @@ export function LighthouseGame() {
 
   const { state, begin, reset, setWind, doStoke, doWipe, doMark } =
     useLighthouse(onEvent);
+
+  const startNight = useCallback(() => {
+    primeAudio();
+    startDrone();
+    begin();
+  }, [begin]);
+
+  const restart = useCallback(() => {
+    stopDrone();
+    reset();
+  }, [reset]);
+
+  const wind = useCallback(
+    (held: boolean) => {
+      if (held) cue.windStart();
+      setWind(held);
+    },
+    [setWind],
+  );
+
+  const stokeFlame = useCallback(() => {
+    cue.stoke();
+    doStoke();
+  }, [doStoke]);
+
+  const wipeLens = useCallback(() => {
+    cue.wipe();
+    doWipe();
+  }, [doWipe]);
+
+  const markShip = useCallback(
+    (id: number) => {
+      cue.mark();
+      doMark(id);
+    },
+    [doMark],
+  );
+
+  // stop the turning drone if the player leaves mid-night
+  useEffect(() => () => stopDrone(), []);
 
   const saveEntry = useCallback(
     (name: string, line: string) => {
@@ -115,7 +162,7 @@ export function LighthouseGame() {
       <HUD state={state} />
 
       <div className="relative flex flex-1 flex-col">
-        <Scene state={state} onMarkShip={doMark} />
+        <Scene state={state} onMarkShip={markShip} />
 
         {/* toasts */}
         <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex flex-col items-center gap-1">
@@ -133,24 +180,24 @@ export function LighthouseGame() {
           ))}
         </div>
 
-        {state.phase === "briefing" && <Briefing onBegin={begin} />}
+        {state.phase === "briefing" && <Briefing onBegin={startNight} />}
         {state.phase === "dawn" && (
           <Dawn
             state={state}
             bottle={bottle}
             tally={tally}
             onSave={saveEntry}
-            onAgain={reset}
+            onAgain={restart}
           />
         )}
-        {state.phase === "wreck" && <Wreck state={state} onAgain={reset} />}
+        {state.phase === "wreck" && <Wreck state={state} onAgain={restart} />}
       </div>
 
       <StationDock
         state={state}
-        setWind={setWind}
-        onStoke={doStoke}
-        onWipe={doWipe}
+        setWind={wind}
+        onStoke={stokeFlame}
+        onWipe={wipeLens}
       />
 
       {state.phase === "briefing" && <Logbook entries={log} />}

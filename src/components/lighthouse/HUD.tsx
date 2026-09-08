@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   beamStrength,
   CONFIG,
@@ -7,6 +8,7 @@ import {
   weakestSystem,
   type GameState,
 } from "@/lib/lighthouse/engine";
+import { isQuiet, onQuietChange, setQuiet } from "@/lib/lighthouse/feedback";
 
 const SYS_LABEL: Record<string, string> = {
   gear: "Gear",
@@ -54,6 +56,8 @@ export function HUD({ state }: { state: GameState }) {
             lost
           </div>
         </div>
+
+        <QuietToggle />
       </div>
 
       <div className="grid grid-cols-3 gap-2">
@@ -108,6 +112,54 @@ function Gauge({
         />
       </div>
     </div>
+  );
+}
+
+function QuietToggle() {
+  const [quiet, setLocal] = useState(false);
+
+  // read the persisted value after mount (localStorage is client-only, so this
+  // must be an effect to avoid an SSR/client hydration mismatch), then follow it
+  useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setLocal(isQuiet());
+    /* eslint-enable react-hooks/set-state-in-effect */
+    return onQuietChange(setLocal);
+  }, []);
+
+  return (
+    <button
+      type="button"
+      aria-label={quiet ? "sound off" : "sound on"}
+      aria-pressed={quiet}
+      onClick={() => setQuiet(!quiet)}
+      className="shrink-0 rounded-lg border border-white/10 bg-white/5 p-1.5 text-[var(--ink-dim)] active:scale-95"
+    >
+      {quiet ? (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M4 9v6h4l5 4V5L8 9H4z"
+            fill="currentColor"
+          />
+          <path
+            d="M16 9l5 5M21 9l-5 5"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" />
+          <path
+            d="M16 8.5a4 4 0 010 7M18.5 6a7.5 7.5 0 010 12"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      )}
+    </button>
   );
 }
 

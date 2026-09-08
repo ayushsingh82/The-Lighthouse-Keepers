@@ -2,6 +2,21 @@
 
 import { beamLit, type GameState, type Ship } from "@/lib/lighthouse/engine";
 
+/** A fixed starfield. Values are rounded to a fixed precision so the string the
+ *  server serialises is byte-identical to the one the client computes — an
+ *  unrounded float can differ between the two and trip a hydration warning. */
+const STARS = Array.from({ length: 26 }, (_, i) => {
+  const r = (n: number) =>
+    (((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1) + 1) % 1;
+  const round = (v: number, p: number) => Number(v.toFixed(p));
+  return {
+    top: round(r(1) * 55, 2),
+    left: round(r(2) * 100, 2),
+    size: 1 + Math.round(r(3) * 1.5),
+    delay: round(r(4) * 4, 2),
+  };
+});
+
 /** The view out of the lantern room: sea, rocks, incoming ships, fog, and the
  *  sweeping beam. Ships are tap targets — tapping one marks it for the light. */
 export function Scene({
@@ -19,6 +34,37 @@ export function Scene({
       {/* sky + sea */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a1020] via-[#0b1524] to-[#0e2233]" />
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-[#04101a]" />
+
+      {/* stars — fade out as the fog thickens */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ opacity: 0.7 * (1 - state.fog) }}
+      >
+        {STARS.map((s, i) => (
+          <span
+            key={i}
+            className="twinkle absolute rounded-full bg-white"
+            style={{
+              top: `${s.top}%`,
+              left: `${s.left}%`,
+              height: s.size,
+              width: s.size,
+              animationDelay: `${s.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* the moon */}
+      <div
+        className="pointer-events-none absolute right-6 top-6 h-10 w-10 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at 38% 38%, #f4f1e4, #cdd4dd 60%, #9aa6b4)",
+          boxShadow: "0 0 26px rgba(220,230,245,0.35)",
+          opacity: 0.5 + 0.5 * (1 - state.fog),
+        }}
+      />
 
       {/* the beam, anchored to the lantern at the bottom-centre */}
       <div className="pointer-events-none absolute bottom-[18%] left-1/2 h-[120%] w-0">
@@ -45,6 +91,25 @@ export function Scene({
       {/* the rocks */}
       <div className="absolute inset-x-0 bottom-[14%] flex justify-center">
         <div className="h-6 w-3/4 rounded-t-[40%] bg-[#04101a] shadow-[0_-6px_20px_rgba(0,0,0,0.6)]" />
+      </div>
+
+      {/* the tower the beam springs from */}
+      <div className="pointer-events-none absolute bottom-[12%] left-1/2 -translate-x-1/2">
+        <div
+          className="mx-auto h-24 w-8 rounded-t-md"
+          style={{
+            background: "linear-gradient(to bottom, #1a2636, #0a121d)",
+            clipPath: "polygon(28% 0, 72% 0, 100% 100%, 0 100%)",
+          }}
+        />
+        <div
+          className="mx-auto -mt-[104px] h-4 w-6 rounded-sm border border-white/10"
+          style={{
+            background: lit
+              ? "radial-gradient(circle, var(--beam-hot), rgba(255,217,138,0.3) 70%)"
+              : "#221a10",
+          }}
+        />
       </div>
 
       {/* lantern glow at the base */}

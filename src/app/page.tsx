@@ -8,13 +8,24 @@ export default function Home() {
       </header>
 
       <main className="flex flex-col gap-5">
-        <div
-          className="mx-auto h-40 w-40 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 45%, var(--beam-hot), rgba(255,217,138,0.25) 45%, transparent 70%)",
-          }}
-        />
+        <div className="relative mx-auto h-40 w-40">
+          <div
+            className="beam-cone absolute bottom-1/2 left-1/2 h-48 w-40 -translate-x-1/2"
+            style={{
+              background:
+                "linear-gradient(to top, rgba(255,217,138,0.28), transparent 75%)",
+              clipPath: "polygon(50% 100%, 12% 0, 88% 0)",
+              filter: "blur(3px)",
+            }}
+          />
+          <div
+            className="breathe absolute inset-0 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 50% 45%, var(--beam-hot), rgba(255,217,138,0.25) 45%, transparent 70%)",
+            }}
+          />
+        </div>
         <h1 className="text-3xl font-semibold leading-tight">
           The Lighthouse Keepers
         </h1>
