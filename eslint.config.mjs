@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // The Decentraland SDK7 scene is a separate project with its own toolchain.
+    "scene/**",
   ]),
 ]);
 

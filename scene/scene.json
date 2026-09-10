@@ -1,0 +1,36 @@
+{
+  "ecs7": true,
+  "runtimeVersion": "7",
+  "display": {
+    "title": "The Lighthouse Keepers",
+    "description": "A co-op night watch for mobile. The keeper is gone and the light is dead. Wind the gear, stoke the flame, wipe the lens - no one holds all three alone. Keep the beam alive until dawn and guide the ships home.",
+    "navmapThumbnail": "images/scene-thumbnail.png",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "Lighthouse Keepers team",
+    "email": ""
+  },
+  "main": "bin/index.js",
+  "tags": ["game", "social"],
+  "scene": {
+    "parcels": ["0,0"],
+    "base": "0,0"
+  },
+  "spawnPoints": [
+    {
+      "name": "ashore",
+      "default": true,
+      "position": { "x": [7, 9], "y": [0, 0], "z": [2, 3] },
+      "cameraTarget": { "x": 8, "y": 3, "z": 10 }
+    }
+  ],
+  "landscapeTerrain": false,
+  "featureToggles": {
+    "voiceChat": "enabled"
+  },
+  "worldConfiguration": {
+    "name": "CHANGE-ME.dcl.eth"
+  }
+}
