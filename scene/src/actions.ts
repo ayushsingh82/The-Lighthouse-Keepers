@@ -12,8 +12,9 @@ export function applyAction(kind: ActionKind, shipId?: number): void {
 
   if (kind === 'light') {
     if (s.phase !== 'briefing' && s.phase !== 'dawn' && s.phase !== 'wreck') return
+    // the 'light' cue + ambient are started by effectsSystem on the phase change,
+    // so every client hears it - not just whoever pressed the button
     setState(startNight(), { seed: (Math.floor(Math.random() * 4294967296)) >>> 0, startedBy: '' })
-    fx('light')
     return
   }
 

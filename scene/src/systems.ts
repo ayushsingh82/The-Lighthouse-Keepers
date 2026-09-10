@@ -19,7 +19,7 @@ import {
 } from './state'
 import { beamAnchor, renderWorld } from './world'
 import { pushHudState } from './ui'
-import { fx } from './feedback'
+import { fx, startAmbient, stopAmbient } from './feedback'
 
 let recordedFor: Phase | '' = ''
 
@@ -75,8 +75,13 @@ export function effectsSystem(): void {
     const nowLit = beamLit(s)
     if (prev.phase === 'night' && wasLit && !nowLit) fx('beam-died')
     if (prev.phase === 'night' && !wasLit && nowLit) fx('beam-relit')
+    if (prev.phase !== 'night' && s.phase === 'night') {
+      fx('light')
+      startAmbient()
+    }
     if (prev.phase === 'night' && s.phase === 'dawn') fx('dawn')
     if (prev.phase === 'night' && s.phase === 'wreck') fx('night-lost')
+    if (prev.phase === 'night' && s.phase !== 'night') stopAmbient()
   }
   prev = s
 }
