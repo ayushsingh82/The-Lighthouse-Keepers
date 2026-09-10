@@ -1,5 +1,9 @@
 # Friendzone — Concept Ideas
 
+> **Decision: building The Lighthouse Keepers.** Submission-ready pitch →
+> [`PITCH.md`](./PITCH.md). How to move the prototype to a submittable SDK7
+> scene → [`SDK7-PORT.md`](./SDK7-PORT.md).
+
 Both of these lead with a **world and a hook**, not just a mechanic — that's what wins the
 Creativity & Originality and Retention & Discovery scores.
 

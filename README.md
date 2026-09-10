@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Lighthouse Keepers
 
-## Getting Started
+A co-op night watch for mobile Decentraland. The keeper is gone and the beacon
+is dead. You and a few strangers wash ashore in the fog. Three stations keep the
+light alive — the rotation **gear**, the **flame**, the **lens** — and one pair
+of hands can't hold all three. Keep the beam burning until dawn and guide the
+ships past the rocks. At first light a message in a bottle washes up — a line
+left by a real group who kept the light before you. You sign the logbook and
+leave one line for whoever comes next.
 
-First, run the development server:
+> **Tagline:** *Keep the light alive until dawn. Nobody keeps it alone.*
+
+Built for the **Decentraland Friendzone Mobile Buildathon** (DCL Regenesis Labs).
+
+---
+
+## Repository layout
+
+| Path | What it is |
+|---|---|
+| [`scene/`](./scene/) | **The submission.** A Decentraland **SDK7** scene — the real, deployable build. Multiplayer via `syncEntity`, physical stations, a sweeping beam, React-ECS HUD + overlays, a persistent logbook. |
+| `src/`, `public/` … | The **feel prototype** — a Next.js web app that previews the core loop, the mobile controls, and the art direction. Not submittable (wrong stack); it's the pitch demo and design reference. |
+| [`docs/`](./docs/) | Requirements, pitch, and the SDK7 port guide. |
+
+## The SDK7 scene (`scene/`)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd scene
+npm install
+npm run start              # preview in the Decentraland desktop client
+npm run start -- --mobile  # QR code — preview on your phone (same Wi-Fi)
+npm run build              # type-check + bundle only
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Deploy** (needs a World name — a `*.dcl.eth` NAME on a wallet, or a free one
+from the Friendzone Discord):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Put the name in `scene/scene.json` → `worldConfiguration.name`
+2. `npm run deploy` and sign with the wallet that owns it
+3. Live at `decentraland.org/play?realm=<name>.dcl.eth`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Build details and the multiplayer model are in [`scene/README.md`](./scene/README.md)
+and [`docs/SDK7-PORT.md`](./docs/SDK7-PORT.md).
 
-## Learn More
+## The web prototype
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm install
+npm run dev     # http://localhost:3000  — landing page + /play
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Portrait, mobile-first. `/play` runs the full night loop with sound and haptics.
+It is a **prototype** — the Decentraland scene is the submission.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## How it scores
 
-## Deploy on Vercel
+| Criterion | Answer |
+|---|---|
+| Mobile-First | Every action is one finger — walk to a station and tap, tap a ship. No dexterity, no multi-touch, portrait. |
+| Social Value | The meters decay faster than one keeper can service. You divide the stations and call out what's slipping. No voice needed — the shared HUD and the beam going dark *are* the channel. |
+| Mobile UX | Safe-area insets, big tap targets, `isMobile()` sizing, colour + shape + text for every state. |
+| Performance | One parcel, primitives + one beam mesh, 20 Hz render, snapshot netcode. |
+| Creativity | Leads with a world and a mood — dread, fog, a failing light, a ghost — not a mechanic. |
+| Retention | The World's running "souls guided home" counter, the logbook your line stays in, bottle messages you only see by surviving. "Bring a friend, we need a third." |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Full pitch: [`docs/PITCH.md`](./docs/PITCH.md).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Status
+
+- Web prototype: complete, builds clean.
+- SDK7 scene: engine ported, multiplayer + UI + world built; type-checks and
+  bundles clean on `@dcl/sdk` 7.28.0. **Not yet verified in the Decentraland
+  client or deployed** — needs the app installed and a World name.
+
+## License
+
+Open source. See the buildathon terms for submission conditions.

@@ -19,6 +19,13 @@
 
 > ⚠️ **The current `friendzone/` folder is a Next.js scaffold. That stack cannot be submitted.** Step one is to replace it with an SDK7 scene project.
 
+> ✅ **Update:** the SDK7 scene now exists in [`scene/`](../scene/) — engine ported,
+> multiplayer sync (`syncEntity`), physical stations, sweeping beam, React-ECS HUD +
+> overlays, logbook. Type-checks and bundles clean on `@dcl/sdk` 7.28.0. Still
+> **not deployed** — blocked on a World name (§1) and not yet verified in the
+> Decentraland client. Port guide + design rationale: [`SDK7-PORT.md`](./SDK7-PORT.md),
+> [`PITCH.md`](./PITCH.md).
+
 ---
 
 ## 1. Accounts & wallet (we do NOT have this yet — must sort out first)
