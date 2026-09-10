@@ -4,17 +4,46 @@ import { useState } from "react";
 import type { GameState } from "@/lib/lighthouse/engine";
 import type { LogEntry, Tally } from "@/lib/lighthouse/logbook";
 
-function Shell({ children }: { children: React.ReactNode }) {
+type Tone = "night" | "dawn" | "wreck";
+
+const WASH: Record<Tone, string> = {
+  night:
+    "radial-gradient(ellipse at 50% 0%, rgba(255,217,138,0.10), transparent 60%)",
+  dawn: "linear-gradient(to bottom, rgba(255,178,122,0.22), rgba(255,217,138,0.06) 45%, transparent)",
+  wreck:
+    "radial-gradient(ellipse at 50% 60%, rgba(255,107,87,0.14), transparent 65%)",
+};
+
+function Shell({
+  tone = "night",
+  children,
+}: {
+  tone?: Tone;
+  children: React.ReactNode;
+}) {
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center overflow-y-auto bg-[var(--bg)]/92 p-5 backdrop-blur-sm">
-      <div className="w-full max-w-sm rise py-4">{children}</div>
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: WASH[tone] }}
+      />
+      {tone === "wreck" && (
+        <div
+          className="ghost-drift pointer-events-none absolute left-0 top-1/3 h-24 w-16 rounded-full blur-md"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 30%, rgba(200,220,240,0.5), transparent 70%)",
+          }}
+        />
+      )}
+      <div className="rise relative w-full max-w-sm py-4">{children}</div>
     </div>
   );
 }
 
 export function Briefing({ onBegin }: { onBegin: () => void }) {
   return (
-    <Shell>
+    <Shell tone="night">
       <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--ink-dim)]">
         The Lighthouse Keepers
       </p>
@@ -25,18 +54,22 @@ export function Briefing({ onBegin }: { onBegin: () => void }) {
         You washed ashore with strangers. The only way off this rock is to keep
         the beam alive until dawn — and no one can hold it alone.
       </p>
-      <ul className="mt-4 space-y-1.5 text-sm text-[var(--ink)]">
+      <ul className="stagger mt-4 space-y-1.5 text-sm text-[var(--ink)]">
         <li>
-          <b>Wind</b> the rotation gear — hold it, or the beam stops turning.
+          <b className="text-[#8fc3ec]">Wind</b> the rotation gear — hold it, or
+          the beam stops turning.
         </li>
         <li>
-          <b>Stoke</b> the flame before it gutters out.
+          <b className="text-[#ffb98a]">Stoke</b> the flame before it gutters
+          out.
         </li>
         <li>
-          <b>Wipe</b> the lens when fog fouls the glass.
+          <b className="text-[#7fe6c6]">Wipe</b> the lens when fog fouls the
+          glass.
         </li>
         <li>
-          When the beam shines, <b>tap ships</b> to guide them past the rocks.
+          When the beam shines, <b className="text-[var(--beam)]">tap ships</b>{" "}
+          to guide them past the rocks.
         </li>
       </ul>
       <p className="mt-3 text-xs text-[var(--ink-dim)]">
@@ -45,7 +78,7 @@ export function Briefing({ onBegin }: { onBegin: () => void }) {
       <button
         type="button"
         onClick={onBegin}
-        className="mt-5 w-full rounded-xl bg-[var(--beam)] py-3 font-semibold text-[#20160a] active:scale-[0.98]"
+        className="mt-5 w-full rounded-xl bg-[var(--beam)] py-3 font-semibold text-[#20160a] shadow-[0_0_24px_rgba(255,217,138,0.25)] active:scale-[0.98]"
       >
         Light it
       </button>
@@ -71,8 +104,8 @@ export function Dawn({
   const [saved, setSaved] = useState(false);
 
   return (
-    <Shell>
-      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--ok)]">
+    <Shell tone="dawn">
+      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--dawn-1)]">
         Dawn — the light held
       </p>
       <h1 className="mt-2 text-2xl font-semibold">
@@ -150,7 +183,7 @@ export function Wreck({
       ? "Too many broke on the rocks."
       : "The beam stayed dark too long.";
   return (
-    <Shell>
+    <Shell tone="wreck">
       <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--danger)]">
         The night is lost
       </p>
@@ -181,12 +214,20 @@ export function Logbook({ entries }: { entries: LogEntry[] }) {
       </summary>
       <ul className="mt-2 space-y-2">
         {entries.slice(0, 12).map((e, i) => (
-          <li key={i} className="border-t border-white/5 pt-2 first:border-0 first:pt-0">
+          <li
+            key={i}
+            className="border-t border-white/5 pt-2 first:border-0 first:pt-0"
+          >
             <p className="text-[var(--ink)]">
-              {e.line ? `“${e.line}”` : <span className="text-[var(--ink-dim)]">— no note —</span>}
+              {e.line ? (
+                `“${e.line}”`
+              ) : (
+                <span className="text-[var(--ink-dim)]">— no note —</span>
+              )}
             </p>
             <p className="text-xs text-[var(--ink-dim)]">
-              {e.name} · {e.guidedHome} home{e.reachedDawn ? "" : " · night lost"}
+              {e.name} · {e.guidedHome} home
+              {e.reachedDawn ? "" : " · night lost"}
             </p>
           </li>
         ))}

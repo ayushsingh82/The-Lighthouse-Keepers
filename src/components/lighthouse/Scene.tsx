@@ -32,8 +32,10 @@ export function Scene({
   return (
     <div className="relative flex-1 overflow-hidden rounded-2xl border border-white/5 bg-[var(--bg-2)]">
       {/* sky + sea */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a1020] via-[#0b1524] to-[#0e2233]" />
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-[#04101a]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--sky-top)] via-[var(--sky-mid)] to-[var(--sky-horizon)]" />
+      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-b from-transparent to-[var(--sea-deep)]" />
+      {/* sea shimmer just above the rocks */}
+      <div className="sea-shimmer pointer-events-none absolute inset-x-0 bottom-[10%] h-[26%] opacity-60" />
 
       {/* stars — fade out as the fog thickens */}
       <div
@@ -66,14 +68,29 @@ export function Scene({
         }}
       />
 
+      {/* the lit water — a soft wash that rakes with the beam */}
+      {lit && (
+        <div className="pointer-events-none absolute bottom-[16%] left-1/2 h-[110%] w-0">
+          <div
+            className={`beam-cone absolute bottom-0 left-1/2 h-full w-[60vw] max-w-[380px] -translate-x-1/2 ${
+              state.beamOutFor > 0 ? "beam-weak" : ""
+            }`}
+            style={{
+              background:
+                "linear-gradient(to top, rgba(255,231,180,0.16), rgba(255,231,180,0.02) 60%, transparent)",
+              clipPath: "polygon(50% 100%, 0 0, 100% 0)",
+              filter: "blur(6px)",
+            }}
+          />
+        </div>
+      )}
+
       {/* the beam, anchored to the lantern at the bottom-centre */}
       <div className="pointer-events-none absolute bottom-[18%] left-1/2 h-[120%] w-0">
         <div
           className={`beam-cone absolute bottom-0 left-1/2 h-full w-[46vw] max-w-[320px] -translate-x-1/2 ${
             lit ? "" : "opacity-0"
-          } ${
-            state.beamOutFor > 0 && lit ? "beam-weak" : ""
-          }`}
+          } ${state.beamOutFor > 0 && lit ? "beam-weak" : ""}`}
           style={{
             background:
               "linear-gradient(to top, rgba(255,217,138,0.42), rgba(255,217,138,0.05) 70%, transparent)",
@@ -85,31 +102,39 @@ export function Scene({
 
       {/* ships */}
       {state.ships.map((s) => (
-        <ShipDot key={s.id} ship={s} canMark={canMark} onMark={onMarkShip} />
+        <ShipMark key={s.id} ship={s} canMark={canMark} onMark={onMarkShip} />
       ))}
 
       {/* the rocks */}
       <div className="absolute inset-x-0 bottom-[14%] flex justify-center">
-        <div className="h-6 w-3/4 rounded-t-[40%] bg-[#04101a] shadow-[0_-6px_20px_rgba(0,0,0,0.6)]" />
+        <div className="h-6 w-3/4 rounded-t-[40%] bg-[var(--sea-deep)] shadow-[0_-6px_20px_rgba(0,0,0,0.6)]" />
       </div>
 
       {/* the tower the beam springs from */}
       <div className="pointer-events-none absolute bottom-[12%] left-1/2 -translate-x-1/2">
+        {/* tapered shaft */}
         <div
-          className="mx-auto h-24 w-8 rounded-t-md"
+          className="mx-auto h-24 w-9"
           style={{
-            background: "linear-gradient(to bottom, #1a2636, #0a121d)",
-            clipPath: "polygon(28% 0, 72% 0, 100% 100%, 0 100%)",
+            background:
+              "linear-gradient(90deg, #0a121d, #223046 45%, #2b3c54 55%, #0a121d)",
+            clipPath: "polygon(30% 0, 70% 0, 100% 100%, 0 100%)",
           }}
         />
+        {/* gallery railing */}
+        <div className="mx-auto -mt-[100px] h-1.5 w-11 rounded-sm bg-[#2b3c54]" />
+        {/* lantern room */}
         <div
-          className="mx-auto -mt-[104px] h-4 w-6 rounded-sm border border-white/10"
+          className="mx-auto mt-0.5 h-5 w-7 rounded-sm border border-white/10"
           style={{
             background: lit
               ? "radial-gradient(circle, var(--beam-hot), rgba(255,217,138,0.3) 70%)"
               : "#221a10",
+            boxShadow: lit ? "0 0 18px rgba(255,217,138,0.6)" : "none",
           }}
         />
+        {/* cap */}
+        <div className="mx-auto -mt-0.5 h-1.5 w-3 rounded-t-full bg-[#2b3c54]" />
       </div>
 
       {/* lantern glow at the base */}
@@ -122,12 +147,18 @@ export function Scene({
         }}
       />
 
-      {/* fog */}
+      {/* fog — a drifting haze plus a bank that rolls through on the waves */}
       {state.fog > 0.02 && (
-        <div
-          className="fog-layer pointer-events-none absolute inset-0"
-          style={{ opacity: 0.15 + state.fog * 0.6 }}
-        />
+        <>
+          <div
+            className="fog-layer pointer-events-none absolute inset-0"
+            style={{ opacity: 0.15 + state.fog * 0.55 }}
+          />
+          <div
+            className="fog-bank pointer-events-none absolute inset-x-[-20%] bottom-[8%] h-2/3"
+            style={{ opacity: state.fog * 0.7 }}
+          />
+        </>
       )}
 
       {/* beam-out warning vignette */}
@@ -136,7 +167,7 @@ export function Scene({
       )}
 
       {/* horizon label */}
-      <div className="absolute left-3 top-3 font-mono text-[11px] uppercase tracking-widest text-[var(--ink-dim)]">
+      <div className="absolute left-3 top-3 max-w-[60%] font-mono text-[11px] uppercase leading-tight tracking-widest text-[var(--ink-dim)]">
         {canMark
           ? "tap a ship to guide it in"
           : lit
@@ -147,7 +178,7 @@ export function Scene({
   );
 }
 
-function ShipDot({
+function ShipMark({
   ship,
   canMark,
   onMark,
@@ -170,17 +201,36 @@ function ShipDot({
       className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full p-3 disabled:cursor-default"
       style={{ top: `${top}%`, left: `${left}%` }}
     >
-      <span
-        className={`block h-3 w-3 rounded-full ${
-          ship.marked
-            ? "bg-[var(--ok)] shadow-[0_0_10px_var(--ok)]"
-            : danger
-              ? "bg-[var(--danger)] shadow-[0_0_10px_var(--danger)]"
-              : "bg-[var(--ink)]/70"
-        }`}
-      />
+      {/* wake trailing behind a ship turning for home */}
       {ship.marked && (
-        <span className="absolute inset-0 animate-ping rounded-full bg-[var(--ok)]/40" />
+        <span className="absolute left-1/2 top-full h-6 w-0.5 -translate-x-1/2 bg-gradient-to-b from-[var(--ok)]/60 to-transparent" />
+      )}
+      {/* little hull + mast */}
+      <span className="relative block">
+        <span
+          className={`block h-1.5 w-4 rounded-b-full ${
+            ship.marked
+              ? "bg-[var(--ok)] shadow-[0_0_10px_var(--ok)]"
+              : danger
+                ? "bg-[var(--danger)] shadow-[0_0_10px_var(--danger)]"
+                : "bg-[var(--ink)]/70"
+          }`}
+        />
+        <span
+          className={`absolute -top-2 left-1/2 h-2 w-px -translate-x-1/2 ${
+            ship.marked
+              ? "bg-[var(--ok)]"
+              : danger
+                ? "bg-[var(--danger)]"
+                : "bg-[var(--ink)]/60"
+          }`}
+        />
+      </span>
+      {ship.marked && (
+        <span className="absolute inset-0 animate-ping rounded-full bg-[var(--ok)]/30" />
+      )}
+      {danger && (
+        <span className="absolute inset-0 animate-ping rounded-full bg-[var(--danger)]/30" />
       )}
     </button>
   );

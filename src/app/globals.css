@@ -10,6 +10,14 @@
   --beam-hot: #fff2d0;
   --danger: #ff6b57;
   --ok: #6fe0a6;
+
+  /* scene gradients */
+  --sky-top: #0a1020;
+  --sky-mid: #0b1524;
+  --sky-horizon: #0e2233;
+  --sea-deep: #04101a;
+  --dawn-1: #ffb27a;
+  --dawn-2: #ffd98a;
 }
 
 @theme inline {
@@ -60,6 +68,12 @@ button {
   transform-origin: bottom center;
 }
 
+/* a wider, slower rake for the landing-page hero */
+.beam-hero {
+  animation: sweep 7s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
 @keyframes flicker {
   0%,
   100% {
@@ -91,6 +105,42 @@ button {
   animation: drift 40s linear infinite;
 }
 
+/* a fog bank that rolls across from the left */
+@keyframes roll-in {
+  from {
+    transform: translateX(-30%);
+  }
+  to {
+    transform: translateX(30%);
+  }
+}
+.fog-bank {
+  background: radial-gradient(
+    ellipse 60% 90% at 40% 50%,
+    rgba(196, 210, 226, 0.55),
+    rgba(196, 210, 226, 0) 70%
+  );
+  animation: roll-in 22s ease-in-out infinite alternate;
+}
+
+/* sea shimmer */
+@keyframes shimmer {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 240px 0;
+  }
+}
+.sea-shimmer {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0 2px,
+    transparent 2px 9px
+  );
+  animation: shimmer 6s linear infinite;
+}
+
 @keyframes rise {
   from {
     transform: translateY(8px);
@@ -104,6 +154,17 @@ button {
 .rise {
   animation: rise 0.4s ease-out both;
 }
+
+/* staggered reveal for lists in overlays */
+.stagger > * {
+  animation: rise 0.45s ease-out both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.12s; }
+.stagger > *:nth-child(3) { animation-delay: 0.19s; }
+.stagger > *:nth-child(4) { animation-delay: 0.26s; }
+.stagger > *:nth-child(5) { animation-delay: 0.33s; }
+.stagger > *:nth-child(6) { animation-delay: 0.40s; }
 
 @keyframes shake {
   10%,
@@ -140,6 +201,20 @@ button {
   animation: pulse-low 1s ease-in-out infinite;
 }
 
+/* an unmanned co-op station gently asks for a keeper */
+@keyframes pulse-open {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 217, 138, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(255, 217, 138, 0.28);
+  }
+}
+.pulse-open {
+  animation: pulse-open 2s ease-in-out infinite;
+}
+
 /* slow drift of the lantern glow on the landing page */
 @keyframes breathe {
   0%,
@@ -169,20 +244,49 @@ button {
   animation: twinkle 4s ease-in-out infinite;
 }
 
+/* the drowned-keeper ghost drifting through a lost night */
+@keyframes ghost-drift {
+  0% {
+    transform: translateX(-40%) translateY(4px);
+    opacity: 0;
+  }
+  20%,
+  70% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(60%) translateY(-6px);
+    opacity: 0;
+  }
+}
+.ghost-drift {
+  animation: ghost-drift 6s ease-in-out infinite;
+}
+
 /* honour the OS "reduce motion" setting — keep the game readable, drop the loops */
 @media (prefers-reduced-motion: reduce) {
   .beam-cone,
+  .beam-hero,
   .beam-weak,
   .fog-layer,
+  .fog-bank,
+  .sea-shimmer,
   .rise,
+  .stagger > *,
   .shake,
   .breathe,
   .twinkle,
   .pulse-low,
+  .pulse-open,
+  .ghost-drift,
   .animate-ping {
     animation: none !important;
   }
-  .beam-cone {
+  .beam-cone,
+  .beam-hero {
     transform: translateX(-50%) rotate(0deg);
+  }
+  .stagger > * {
+    opacity: 1;
   }
 }

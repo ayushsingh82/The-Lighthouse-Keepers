@@ -20,10 +20,21 @@ export function HUD({ state }: { state: GameState }) {
   const strength = beamStrength(state);
   const frac = Math.min(state.elapsed / CONFIG.NIGHT_MS, 1);
   const weak = weakestSystem(state);
+  const lit = strength > 0;
+
+  // how many systems are running low at once — the moment one pair of hands
+  // can't keep up and the night really wants a second keeper
+  const stretched =
+    [state.gear, state.flame, state.lens].filter((v) => v < 42).length >= 2;
+
+  const graceLeft = Math.max(
+    0,
+    Math.ceil((CONFIG.GRACE_MS - state.beamOutFor) / 1000),
+  );
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
         <BeamRing strength={strength} />
 
         <div className="flex-1">
@@ -39,25 +50,22 @@ export function HUD({ state }: { state: GameState }) {
           </div>
         </div>
 
-        <div className="text-right">
-          <div className="font-mono text-lg leading-none text-[var(--ok)]">
-            {state.guidedHome}
-          </div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-dim)]">
-            home
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="font-mono text-lg leading-none text-[var(--danger)]">
-            {state.wrecked}
-            <span className="text-[var(--ink-dim)]">/{CONFIG.MAX_WRECKS}</span>
-          </div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-[var(--ink-dim)]">
-            lost
-          </div>
-        </div>
-
         <QuietToggle />
+      </div>
+
+      {/* thin status line: rescue tally, and the beam-out countdown when dark */}
+      <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-widest">
+        <div className="flex gap-3">
+          <span className="text-[var(--ok)]">▲ {state.guidedHome} home</span>
+          <span className="text-[var(--danger)]">
+            ▼ {state.wrecked}/{CONFIG.MAX_WRECKS} lost
+          </span>
+        </div>
+        {state.phase === "night" && !lit && (
+          <span className="animate-pulse text-[var(--danger)]">
+            beam dark · {graceLeft}s
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-2">
@@ -69,6 +77,12 @@ export function HUD({ state }: { state: GameState }) {
         />
         <Gauge label={SYS_LABEL.lens} value={state.lens} warn={weak === "lens"} />
       </div>
+
+      {state.phase === "night" && stretched && (
+        <p className="rounded-lg border border-[var(--beam)]/30 bg-[var(--beam)]/10 px-3 py-1.5 text-center text-[11px] text-[var(--beam)]">
+          Two stations slipping at once — call a second keeper.
+        </p>
+      )}
     </div>
   );
 }
@@ -137,10 +151,7 @@ function QuietToggle() {
     >
       {quiet ? (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path
-            d="M4 9v6h4l5 4V5L8 9H4z"
-            fill="currentColor"
-          />
+          <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" />
           <path
             d="M16 9l5 5M21 9l-5 5"
             stroke="currentColor"
