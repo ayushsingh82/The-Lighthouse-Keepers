@@ -30,8 +30,8 @@ const OK = Color4.create(0.44, 0.88, 0.65, 1)
 const BAD = Color4.create(1, 0.42, 0.34, 1)
 const PANEL = Color4.create(0.03, 0.05, 0.08, 0.92)
 
-const M = isMobile()
-const fs = (n: number) => Math.round(n * (M ? 1.15 : 1))
+// isMobile() can be false until the platform resolves, so read it per call
+const fs = (n: number) => Math.round(n * (isMobile() ? 1.15 : 1))
 
 function meter(label: string, value: number, warn: boolean) {
   const low = value <= CONFIG.BEAM_MIN
@@ -131,7 +131,10 @@ function overlayShell(children: unknown) {
         alignItems: 'center'
       }}
     >
-      <UiEntity uiTransform={{ width: 760, flexDirection: 'column', padding: 28 }} uiBackground={{ color: PANEL }}>
+      <UiEntity
+        uiTransform={{ width: 760, flexDirection: 'column', padding: 28, pointerFilter: 'block' }}
+        uiBackground={{ color: PANEL }}
+      >
         {children as ReactEcs.JSX.Element}
       </UiEntity>
     </UiEntity>

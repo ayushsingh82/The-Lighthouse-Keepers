@@ -186,10 +186,12 @@ export function getMyAddress(): string {
 }
 
 /** The keeper whose address sorts lowest runs the tick. Deterministic on every
- *  client, no messages, survives joins/leaves. Solo player is always authority. */
+ *  client, no messages, survives joins/leaves. Solo player is always authority.
+ *  If our own address hasn't resolved yet (guest, slow profile), fall back to
+ *  "run it if we appear to be alone" so a solo night never freezes. */
 export function isAuthority(): boolean {
   const me = getMyAddress()
-  if (!me) return false
+  if (!me) return crewSize() <= 1
   let lowest = me
   for (const [e] of engine.getEntitiesWith(PlayerIdentityData)) {
     const a = PlayerIdentityData.get(e).address.toLowerCase()

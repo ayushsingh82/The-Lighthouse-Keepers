@@ -243,7 +243,7 @@ export function renderWorld(s: GameState): void {
   for (const [id, e] of shipEntities) {
     if (!live.has(id)) {
       pointerEventsSystem.removeOnPointerDown(e)
-      engine.removeEntity(e)
+      engine.removeEntityWithChildren(e) // takes the mast child with it
       shipEntities.delete(id)
     }
   }
