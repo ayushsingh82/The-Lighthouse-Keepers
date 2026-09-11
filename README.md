@@ -39,7 +39,7 @@ Built for the **Decentraland Friendzone Mobile Buildathon** (DCL Regenesis Labs)
 
 | | |
 |---|---|
-| 🌐 **Live World** | _pending a World name — see [Deployment](#deployment)_ |
+| 🌐 **Live World** | [decentraland.org/play?realm=djwaifu.dcl.eth](https://decentraland.org/play?realm=djwaifu.dcl.eth) |
 | 🎮 **Web prototype** | `npm run dev` → [localhost:3000](http://localhost:3000) |
 | 📄 **Pitch** | [`docs/PITCH.md`](docs/PITCH.md) |
 | 🛠 **SDK7 port guide** | [`docs/SDK7-PORT.md`](docs/SDK7-PORT.md) |
@@ -135,9 +135,8 @@ Full account/wallet walkthrough: [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) 
 - **Web prototype** — complete, builds clean.
 - **SDK7 scene** — engine ported; multiplayer sync, physical stations, sweeping
   beam, React-ECS HUD + overlays, logbook, and sound all built. Type-checks and
-  bundles clean on `@dcl/sdk` 7.28.0; preview server runs with no errors.
-  **Not yet verified in the Decentraland client or deployed** — that needs the
-  app installed and a World name.
+  bundles clean on `@dcl/sdk` 7.28.0. **Deployed** to `djwaifu.dcl.eth`. Not yet
+  verified in the desktop/mobile client — that's next.
 
 See [`docs/PENDING.md`](docs/PENDING.md) for the full checklist.
 

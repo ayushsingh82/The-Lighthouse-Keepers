@@ -9,23 +9,25 @@ build and the web prototype compile clean and are pushed to `main`.
 
 ## 1. Blockers — only you can do these
 
-- [ ] **Get a World name.** Ask in the Friendzone Discord channel for a free
-      buildathon name first (costs nothing). Otherwise claim a Decentraland
-      NAME at `decentraland.org/builder/names` — 100 MANA (burned) + ~$1 POL
-      for Polygon gas. Or attach a World to an ENS `.eth` name you already own
-      (36 MB cap). Details: `docs/REQUIREMENTS.md` §1.
-- [ ] **Set the name** in `scene/scene.json` → `worldConfiguration.name`
-      (currently `CHANGE-ME.dcl.eth`).
-- [ ] **Deploy** — `cd scene && npm run deploy`, sign with the wallet that owns
-      the name. Keep the World live through judging (Sep 12–18).
+- [x] **Get a World name.** Granted by DCL Regenesis Labs (Discord):
+      **`djwaifu.dcl.eth`**, ACL includes `0xB822…dec1`.
+- [x] **Set the name** in `scene/scene.json` → `worldConfiguration.name`.
+- [x] **Deploy** — done 2026-09-11, `Content uploaded successfully`. Live at
+      `https://decentraland.org/play?realm=djwaifu.dcl.eth` (allow ~15 min for
+      asset-bundle processing after any deploy before it stops looking empty).
+- [ ] **Keep the World live** through judging (Sep 12–18) — don't undeploy /
+      let storage budget lapse.
 - [ ] **Submit on DoraHacks** before the deadline. Brief says 2026-09-11
       05:30 UTC — check whether it has passed or was extended.
 - [ ] Confirm the GitHub repo is public and stays public through judging.
+- [ ] Re-deploy (same command) after any further code changes below.
 
 ## 2. Verification — needs the Decentraland app installed
 
-- [ ] `cd scene && npm run start` — test in the desktop client. Nothing in the
-      scene is verified in-client yet, only that it type-checks and bundles.
+- [ ] Open `https://decentraland.org/play?realm=djwaifu.dcl.eth` (~15 min after
+      deploy) and confirm the island actually loads and looks right.
+- [ ] `cd scene && npm run start` — test in the desktop client for faster
+      iteration than redeploying each time.
 - [ ] `npm run start -- --mobile` — test on a real phone: tap targets, tapping
       ships from the balcony, station reach distance (`maxDistance: 3.5` in
       `scene/src/world.ts`), HUD readability at phone size.
